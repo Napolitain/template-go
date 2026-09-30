@@ -1,6 +1,6 @@
 module github.com/napolitain/template-go
 
-go 1.26.7
+go 1.27.1
 
 tool (
 	golang.org/x/tools/cmd/deadcode

@@ -14,3 +14,11 @@ prek run -a --hook-stage pre-push    # pre-push hooks
 - pre-push: `golangci-lint run --fix`, `gofumpt -extra -w`, `go vet`, `deadcode -test`
 
 `gofumpt` and `deadcode` are pinned in `go.mod` as `tool` dependencies (`go tool ...`); `golangci-lint` must be on `PATH`.
+
+Coverage:
+
+```sh
+go test -race -covermode=atomic -coverprofile=coverage.out ./...
+go tool cover -func=coverage.out     # per-function summary
+go tool cover -html=coverage.out     # open HTML report
+```

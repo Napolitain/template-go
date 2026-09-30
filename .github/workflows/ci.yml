@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-go@v7.0.0
+        with:
+          go-version-file: go.mod
+
+      - uses: golangci/golangci-lint-action@v9.3.0
+        with:
+          version: latest
+          install-only: true
+
+      - name: Hooks (pre-commit)
+        uses: j178/prek-action@v3.0.0
+
+      - name: Hooks (pre-push)
+        run: prek run --show-diff-on-failure --all-files --hook-stage pre-push
+
+      - name: Test with coverage
+        run: |
+          go test -race -covermode=atomic -coverprofile=coverage.out ./...
+          go tool cover -func=coverage.out
