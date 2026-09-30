@@ -1,0 +1,92 @@
+minimum_prek_version = "0.5.0"
+default_install_hook_types = ["pre-commit", "pre-push"]
+
+[[repos]]
+repo = "builtin"
+hooks = [
+  { id = "trailing-whitespace" },
+  { id = "end-of-file-fixer" },
+  { id = "mixed-line-ending", args = ["--fix=lf"] },
+  { id = "fix-byte-order-marker" },
+  { id = "pretty-format-json", args = ["--autofix", "--no-sort-keys"] },
+  { id = "check-toml" },
+  { id = "check-yaml" },
+  { id = "check-merge-conflict" },
+  { id = "check-added-large-files" },
+  { id = "detect-private-key" },
+]
+
+[[repos]]
+repo = "local"
+
+# pre-commit: fixers first (by priority), then checks
+
+[[repos.hooks]]
+id = "go-mod-tidy"
+name = "go mod tidy"
+language = "system"
+entry = "go mod tidy"
+files = '(\.go|go\.mod|go\.sum)$'
+pass_filenames = false
+stages = ["pre-commit"]
+priority = 10
+
+[[repos.hooks]]
+id = "go-fix"
+name = "go fix"
+language = "system"
+entry = "go fix ./..."
+types = ["go"]
+pass_filenames = false
+stages = ["pre-commit"]
+priority = 20
+
+[[repos.hooks]]
+id = "gofumpt"
+name = "gofumpt"
+language = "system"
+entry = "go tool gofumpt -extra -w"
+types = ["go"]
+stages = ["pre-commit"]
+priority = 30
+
+[[repos.hooks]]
+id = "go-vet"
+name = "go vet"
+language = "system"
+entry = "go vet ./..."
+types = ["go"]
+pass_filenames = false
+stages = ["pre-commit", "pre-push"]
+priority = 40
+
+# pre-push
+
+[[repos.hooks]]
+id = "golangci-lint"
+name = "golangci-lint"
+language = "system"
+entry = "golangci-lint run --fix ./..."
+types = ["go"]
+pass_filenames = false
+stages = ["pre-push"]
+priority = 10
+
+[[repos.hooks]]
+id = "gofumpt-push"
+name = "gofumpt"
+language = "system"
+entry = "go tool gofumpt -extra -w"
+types = ["go"]
+stages = ["pre-push"]
+priority = 20
+
+[[repos.hooks]]
+id = "deadcode"
+name = "deadcode"
+language = "system"
+entry = "sh -c 'out=$(go tool deadcode -test ./...) && [ -z \"$out\" ] || { echo \"$out\"; exit 1; }'"
+types = ["go"]
+pass_filenames = false
+stages = ["pre-push"]
+priority = 40
