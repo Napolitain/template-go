@@ -2,9 +2,14 @@
 
 Minimal Go template with hooks via [prek](https://prek.j178.dev).
 
+```
+cmd/template-go/   main package (one dir per binary)
+internal/          private packages
+```
+
 ```sh
 prek install       # install pre-commit + pre-push hooks
-go run .
+go run ./cmd/template-go
 go test ./...
 prek run -a                          # pre-commit hooks
 prek run -a --hook-stage pre-push    # pre-push hooks
