@@ -27,3 +27,9 @@ go test -race -covermode=atomic -coverprofile=coverage.out ./...
 go tool cover -func=coverage.out     # per-function summary
 go tool cover -html=coverage.out     # open HTML report
 ```
+
+Mutation testing ([gremlins](https://gremlins.dev)), on demand and weekly in CI; fails below 100% test efficacy:
+
+```sh
+prek run --hook-stage manual gremlins --all-files
+```

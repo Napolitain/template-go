@@ -90,3 +90,14 @@ types = ["go"]
 pass_filenames = false
 stages = ["pre-push"]
 priority = 40
+
+# manual: prek run --hook-stage manual gremlins --all-files
+
+[[repos.hooks]]
+id = "gremlins"
+name = "gremlins (mutation testing)"
+language = "system"
+entry = "go tool gremlins unleash --threshold-efficacy 100"
+types = ["go"]
+pass_filenames = false
+stages = ["manual"]
