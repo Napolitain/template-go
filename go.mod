@@ -8,7 +8,10 @@ tool (
 	mvdan.cc/gofumpt
 )
 
-require pgregory.net/rapid v1.3.0
+require (
+	golang.org/x/tools v0.50.0
+	pgregory.net/rapid v1.3.0
+)
 
 require (
 	github.com/MakeNowJust/heredoc v1.0.0 // indirect
@@ -36,6 +39,5 @@ require (
 	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/telemetry v0.0.0-20260908163034-4bcc4b2ee518 // indirect
 	golang.org/x/text v0.31.0 // indirect
-	golang.org/x/tools v0.50.0 // indirect
 	mvdan.cc/gofumpt v0.12.0 // indirect
 )
