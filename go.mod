@@ -8,6 +8,8 @@ tool (
 	mvdan.cc/gofumpt
 )
 
+require pgregory.net/rapid v1.3.0
+
 require (
 	github.com/MakeNowJust/heredoc v1.0.0 // indirect
 	github.com/bluekeyes/go-gitdiff v0.8.1 // indirect

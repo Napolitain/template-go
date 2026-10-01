@@ -3,3 +3,4 @@
 *.out
 coverage.out
 coverage.html
+gremlins.json

@@ -91,13 +91,24 @@ pass_filenames = false
 stages = ["pre-push"]
 priority = 40
 
+[[repos.hooks]]
+id = "go-test"
+name = "go test + coverage (internal/..., min 80%)"
+language = "system"
+entry = '''sh -c 'go test -race -covermode=atomic -coverpkg=./internal/... -coverprofile=coverage.out ./... && go tool cover -func=coverage.out | awk -v min=80 "/^total:/ { print; if (\$3 + 0 < min) { print \"coverage below \" min \"%\"; exit 1 } }"' '''
+types = ["go"]
+pass_filenames = false
+stages = ["pre-push"]
+priority = 50
+
 # manual: prek run --hook-stage manual gremlins --all-files
+# gremlins ignores --threshold-efficacy (always exits 0), so gate on its JSON report.
 
 [[repos.hooks]]
 id = "gremlins"
 name = "gremlins (mutation testing)"
 language = "system"
-entry = "go tool gremlins unleash --threshold-efficacy 100"
+entry = '''sh -c 'go tool gremlins unleash --output gremlins.json && grep -q "\"mutants_lived\":0," gremlins.json || { echo "surviving mutants: see LIVED above"; exit 1; }' '''
 types = ["go"]
 pass_filenames = false
 stages = ["manual"]

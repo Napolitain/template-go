@@ -23,10 +23,6 @@ jobs:
             - name: Hooks (pre-commit)
               uses: j178/prek-action@v3.0.0
 
+            # Includes go test -race with the coverage gate.
             - name: Hooks (pre-push)
               run: prek run --show-diff-on-failure --all-files --hook-stage pre-push
-
-            - name: Test with coverage
-              run: |
-                  go test -race -covermode=atomic -coverprofile=coverage.out ./...
-                  go tool cover -func=coverage.out
