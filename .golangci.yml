@@ -4,7 +4,9 @@ linters:
     default: standard
     enable:
         - bodyclose
+        - cyclop
         - errorlint
+        - gocognit
         - gocritic
         - misspell
         - modernize
@@ -14,6 +16,11 @@ linters:
         - unconvert
         - usestdlibvars
         - usetesting
+    settings:
+        cyclop:
+            max-complexity: 10
+        gocognit:
+            min-complexity: 15
 
 formatters:
     enable:

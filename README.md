@@ -21,6 +21,13 @@ prek run -a --hook-stage pre-push    # pre-push hooks
 
 `gofumpt`, `deadcode` and `gremlins` are pinned in `go.mod` as `tool` dependencies (`go tool ...`); `golangci-lint` must be on `PATH`.
 
+## Complexity
+
+`golangci-lint` enforces a maximum cyclomatic complexity of 10 (`cyclop`) and
+cognitive complexity of 15 (`gocognit`) per function, including tests and tools.
+Both run in the existing pre-push hook and CI. Thresholds live in `.golangci.yml`.
+Refactor functions that exceed them; these checks do not have automatic fixes.
+
 ## Coverage
 
 The pre-push hook (also run in CI) runs `go run ./tools/check coverage -min 80`: `go test -race` plus a gate on statement coverage of `./internal/...`. Change `-min` in `prek.toml`.
