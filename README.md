@@ -21,6 +21,25 @@ prek run -a --hook-stage pre-push    # pre-push hooks
 
 `gofumpt`, `deadcode` and `gremlins` are pinned in `go.mod` as `tool` dependencies (`go tool ...`); `golangci-lint` must be on `PATH`.
 
+## Optional Nix shell
+
+Installing the tools directly on NixOS (or another OS) remains supported. The
+optional shell supports x86_64/aarch64 Linux and Apple Silicon macOS. With Nix
+flakes enabled:
+
+```sh
+nix develop --command "$SHELL"       # keep your shell, aliases and prompt
+# Or: nix develop                   # use Nix's default Bash shell
+```
+
+Then run the normal development commands in this README. Each template has its own
+`flake.nix` and `flake.lock`, using `github:NixOS/nixpkgs/nixpkgs-unstable`.
+To refresh to the latest unstable packages, run `nix flake update nixpkgs`,
+then leave and re-enter the shell. Commit the updated lock file with your project.
+
+The shell supplies `go_latest`, golangci-lint, and a C compiler for race tests.
+The tools declared in `go.mod` remain managed by Go.
+
 ## Complexity
 
 `golangci-lint` enforces a maximum cyclomatic complexity of 10 (`cyclop`) and
