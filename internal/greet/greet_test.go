@@ -17,6 +17,13 @@ func TestHello(t *testing.T) {
 	}
 }
 
+// BenchmarkHello is a PGO smoke workload; replace it with realistic application work.
+func BenchmarkHello(b *testing.B) {
+	for b.Loop() {
+		greet.Hello("world")
+	}
+}
+
 // Property-based test: rapid generates names and shrinks failures to a minimal case.
 func TestHelloProperties(t *testing.T) {
 	t.Parallel()
