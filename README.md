@@ -82,41 +82,30 @@ Caveats (gremlins v0.6.0):
 
 ## Profile-guided optimization
 
-Go's [PGO](https://go.dev/doc/pgo) consumes **sampled CPU pprof profiles**; there is
-no instrument-then-merge LLVM/GCC step. The following is a reproducible smoke test
-using `BenchmarkHello`. Run it from the module root:
+Go's [PGO](https://go.dev/doc/pgo) uses **sampled CPU pprof profiles**. Keep a baseline
+with explicit `-pgo=off`, collect representative CPU work, then rebuild:
 
 ```sh
 mkdir -p bin/pgo
-# Keep explicit off/use flags so default.pgo cannot silently change the baseline.
 go build -pgo=off -o bin/pgo/baseline ./cmd/template-go
+# Starter smoke workload; replace with realistic benchmarks or application pprof.
 go test -pgo=off ./internal/greet -run='^$' -bench='^BenchmarkHello$' \
     -benchtime=5s -cpuprofile="$PWD/bin/pgo/cpu.pprof" -o bin/pgo/greet.test
 go tool pprof -top bin/pgo/cpu.pprof
 go build -pgo="$PWD/bin/pgo/cpu.pprof" -o bin/pgo/optimized ./cmd/template-go
 go test -pgo="$PWD/bin/pgo/cpu.pprof" ./...
-hyperfine --warmup 3 './bin/pgo/baseline' './bin/pgo/optimized'
+hyperfine --warmup 3 './evaluate.sh ./bin/pgo/baseline' './evaluate.sh ./bin/pgo/optimized'
 ```
 
-`hyperfine` is optional. `BenchmarkHello` exercises only the starter greeting;
-its profile is not representative of a real service and implies no speedup.
-Replace it with realistic benchmarks or collect CPU profiles from your running
-application with `runtime/pprof` (start/stop CPU profiling around the workload) or
-`net/http/pprof`. Keep diagnostic HTTP endpoints private. Profile long enough to
-capture the expected mix of inputs, hot paths and concurrency; inspect `pprof
--top` to check that useful application samples were collected. CPU profiles from
-representative production instances can be combined with `go tool pprof -proto`,
-with weighting appropriate to the traffic mix. Heap, trace, coverage, perf.data
-and LLVM profiles cannot be substituted for CPU pprof data.
+For services, replace benchmark collection with `runtime/pprof` or private
+`net/http/pprof` endpoints. Inspect `pprof -top` for your hot paths. Heap,
+coverage, LLVM profiles and raw `perf.data` cannot replace CPU pprof data.
 
-Compare the optimized binary with the baseline on a separate representative
-workload using warmups and repeated measurements of time/throughput and latency.
-Keep compiler, source, dependencies, target and build flags fixed for that
-comparison. Recollect profiles as the workload or program changes, and check
-correctness with the same explicit `-pgo` flag.
+Check final correctness, then compare both variants on separate evaluation inputs
+with repeated runs, including latency, memory and size. Keep source, compiler and
+flags fixed; refresh profiles as code/workload changes. The greeting is only a
+pipeline check and promises no speedup.
 
-Profiles stay in ignored `bin/pgo/`; no `default.pgo` is installed. Ordinary builds
-keep their existing behavior (Go defaults to `-pgo=auto`). If you deliberately
-place `default.pgo` beside `cmd/template-go/main.go`, Go will automatically use it;
-`-pgo=off` still forces a baseline. There is no instrumentation-PGO, LLVM AutoFDO,
-or Propeller/relinking workflow for the standard Go compiler/linker in this template.
+Profiles stay in ignored `bin/pgo/`. No `default.pgo` is installed; ordinary
+builds keep Go's `-pgo=auto` behavior. No instrumentation, LLVM AutoFDO or
+Propeller mode is supplied for the standard Go compiler/linker.
