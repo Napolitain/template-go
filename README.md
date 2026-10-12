@@ -1,5 +1,7 @@
 # template-go
 
+See [AGENTS.md](AGENTS.md) for the working, verification, performance and commit policies.
+
 Minimal Go template with hooks via [prek](https://prek.j178.dev).
 
 ```
